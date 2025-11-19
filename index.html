@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroMihue – Chat de Arroz</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: url('https://images.unsplash.com/photo-1524594081293-190a2fe0baae?auto=format&fit=crop&w=1200&q=80') no-repeat center/cover;
+      padding: 25px;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: auto;
+      background: rgba(255,255,255,0.92);
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 0 18px rgba(0,0,0,0.25);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1a5fb4;
+      font-size: 32px;
+    }
+
+    /* Estilo Messenger */
+    #chatbox {
+      border: 1px solid #ccc;
+      padding: 12px;
+      height: 350px;
+      overflow-y: auto;
+      background: #f0f2f5;
+      border-radius: 12px;
+    }
+
+    .msg {
+      margin: 10px 0;
+      padding: 10px 14px;
+      border-radius: 18px;
+      max-width: 75%;
+      font-size: 15px;
+    }
+
+    .user {
+      background: #0084ff;
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bot {
+      background: #e4e6eb;
+      color: #1c1e21;
+      margin-right: auto;
+      border-bottom-left-radius: 4px;
+    }
+
+    .options {
+      margin-top: 15px;
+      background: #eaf3ff;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #c8dfff;
+    }
+
+    label {
+      display: block;
+      margin: 8px 0;
+      font-size: 15px;
+    }
+
+    button {
+      margin-top: 12px;
+      width: 100%;
+      padding: 12px;
+      background: #1a5fb4;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #144a8a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌾 AgroMihue – Asistente del Cultivo de Arroz</h1>
+
+    <div class="options">
+      <h3>Selecciona el tema sobre arroz:</h3>
+
+      <label><input type="checkbox" name="tema" value="siembra"> Siembra</label>
+      <label><input type="checkbox" name="tema" value="riego"> Riego</label>
+      <label><input type="checkbox" name="tema" value="plagas"> Plagas</label>
+      <label><input type="checkbox" name="tema" value="fertilizacion"> Fertilización</label>
+      <label><input type="checkbox" name="tema" value="suelo"> Suelo</label>
+      <label><input type="checkbox" name="tema" value="enfermedades"> Enfermedades</label>
+      <label><input type="checkbox" name="tema" value="clima"> Clima</label>
+      <label><input type="checkbox" name="tema" value="cosecha"> Cosecha</label>
+
+      <button onclick="enviarSeleccion()">Preguntar</button>
+    </div>
+
+    <div id="chatbox"></div>
+  </div>
+
+  <script>
+    const arroz = {
+      siembra: "La siembra del arroz requiere una planificación cuidadosa. ✔ Se recomienda nivelar el terreno para garantizar lámina uniforme; ✔ usar semillas certificadas; ✔ densidad 80–120 kg/ha; ✔ siembra directa o por trasplante según el sistema; ✔ la germinación óptima ocurre entre 28–32 °C; ✔ el establecimiento del cultivo mejora con humedad constante las primeras semanas.",
+      riego: "El arroz demanda condiciones de inundación controlada. ✔ Mantener entre 5 y 10 cm de lámina de agua; ✔ evitar estrés hídrico en etapa de macollamiento; ✔ el riego intermitente puede ahorrar hasta 30% de agua; ✔ cuidar la entrada y salida del agua para evitar arrastre de nutrientes; ✔ monitorear salinidad en zonas propensas.",
+      plagas: "Las plagas del arroz incluyen: ✔ Barrenador del tallo (daña internamente el tallo, causando ‘corazón muerto’); ✔ Chinches (afectan llenado del grano); ✔ Caracol manzana (devora plántulas); ✔ Áfidos (transmiten enfermedades). Manejo: ✔ usar variedades tolerantes; ✔ monitoreo semanal; ✔ control biológico; ✔ aplicaciones focalizadas según umbral económico.",
+      fertilizacion: "La fertilización del arroz debe basarse en análisis de suelo. ✔ Nitrógeno: 60–120 kg/ha fraccionados en 2–3 aplicaciones; ✔ Fósforo: esencial en establecimiento; ✔ Potasio: evita encamado y mejora llenado; ✔ Micronutrientes como Zn pueden ser necesarios en suelos inundados. ✔ La fertilización balanceada incrementa el rendimiento y reduce enfermedades.",
+      suelo: "El cultivo prospera mejor en: ✔ suelos arcillosos o franco-arcillosos; ✔ buena retención de agua; ✔ pH ideal 5.5–6.5; ✔ nivelación milimétrica; ✔ presencia moderada de materia orgánica. ✔ Recomendado realizar análisis físico-químico antes de cada campaña.",
+      enfermedades: "Enfermedades comunes: ✔ Pyricularia o quemado (manchas en hojas y panículas); ✔ Añublo de la vaina; ✔ Mancha parda. Manejo: ✔ semillas certificadas; ✔ fertilización equilibrada evitando excesos de nitrógeno; ✔ rotación; ✔ control químico en etapas críticas; ✔ evitar humedad excesiva en follaje.",
+      clima: "El arroz necesita: ✔ temperaturas entre 24–30 °C; ✔ alta luminosidad; ✔ humedad ambiental elevada; ✔ ausencia de vientos fuertes en floración; ✔ riesgo de pérdidas bajo 20 °C. ✔ Las condiciones climáticas influyen directamente en macollamiento, floración y llenado del grano.",
+      cosecha: "La cosecha se recomienda cuando el grano está al 20–24% de humedad. ✔ Realizar pruebas de mordida y corte; ✔ evitar cosechar muy tarde para reducir desgrane; ✔ calibrar maquinaria; ✔ secar el grano a 12–14% para almacenamiento; ✔ evitar contaminación con impurezas."
+    };
+
+    function chatbot(p) {
+      return arroz[p] || "Selecciona un tema válido.";
+    }
+
+    function enviarSeleccion() {
+      const seleccionados = [...document.querySelectorAll('input[name="tema"]:checked')].map(e => e.value);
+      if (seleccionados.length === 0) return alert("Selecciona al menos un tema.");
+
+      const chatbox = document.getElementById("chatbox");
+
+      seleccionados.forEach(sel => {
+        chatbox.innerHTML += `<div class='msg user'>${sel}</div>`;
+        const respuesta = chatbot(sel);
+        chatbox.innerHTML += `<div class='msg bot'>${respuesta}</div>`;
+      });
+
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
